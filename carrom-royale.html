@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Carrom Royale — Premium Carrom Board</title>
+<meta name="description" content="A premium wooden carrom board game. Play offline, no install needed.">
+<meta name="theme-color" content="#3b2415">
+<style>
+/* ============================================================
+   CARROM ROYALE — "Walnut & Brass" design system
+   ============================================================ */
+:root{
+  --wood-1:#2a160b;
+  --wood-2:#4a2a15;
+  --wood-3:#6b4023;
+  --wood-4:#8a5a30;
+  --brass:#c9a04e;
+  --brass-bright:#e8c876;
+  --ivory:#f3e9d2;
+  --lacquer:#b13a2b;
+  --felt:#1c332a;
+  --ink:#180e08;
+  --panel-bg: rgba(30,17,9,0.62);
+  --panel-border: rgba(201,160,78,0.35);
+  --text-hi:#f6ecd8;
+  --text-lo:#cbb692;
+  --accent:#c9a04e;
+  --board-cloth-a:#8a5a30;
+  --board-cloth-b:#6b4023;
+  --pocket-color:#0d0704;
+  --coin-white-a:#fbf3df;
+  --coin-white-b:#d8c79a;
+  --coin-black-a:#3a322a;
+  --coin-black-b:#0f0b08;
+  --coin-queen-a:#e04a38;
+  --coin-queen-b:#8f2013;
+  --striker-a:#efe0b8;
+  --striker-b:#a9853f;
+  --radius-lg:22px;
+  --radius-md:14px;
+  --radius-sm:8px;
+  --shadow-deep: 0 18px 50px rgba(0,0,0,0.55);
+  --ui-font: Georgia, 'Times New Roman', serif;
+  --body-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+:root[data-theme="dark-wood"]{
+  --wood-1:#160c07; --wood-2:#2c1a10; --wood-3:#42281a; --wood-4:#5a3822;
+  --board-cloth-a:#42281a; --board-cloth-b:#2c1a10;
+  --brass:#a9843f; --brass-bright:#d4ac60;
+}
+:root[data-theme="marble"]{
+  --wood-1:#20242b; --wood-2:#343a44; --wood-3:#e8e6df; --wood-4:#c9c6bb;
+  --board-cloth-a:#efeee8; --board-cloth-b:#c9c6bb;
+  --brass:#8a97a6; --brass-bright:#c3ccd6;
+  --coin-black-a:#4a4f58; --coin-black-b:#1c1f24;
+  --pocket-color:#14161a;
+}
+:root[data-theme="neon"]{
+  --wood-1:#050914; --wood-2:#0b1330; --wood-3:#0f1a3d; --wood-4:#13224d;
+  --board-cloth-a:#0b1330; --board-cloth-b:#050914;
+  --brass:#38e8ff; --brass-bright:#8ff7ff;
+  --lacquer:#ff3d7f;
+  --coin-queen-a:#ff5c8d; --coin-queen-b:#a3123f;
+  --coin-white-a:#eafcff; --coin-white-b:#9fe9f5;
+  --coin-black-a:#241c3d; --coin-black-b:#0a0716;
+}
+:root[data-ui="light"]{
+  --panel-bg: rgba(255,250,240,0.72);
+  --panel-border: rgba(120,86,32,0.25);
+  --text-hi:#2a1a0c;
+  --text-lo:#5c4426;
+  --ink:#f3e9d2;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  margin:0; min-height:100vh; min-height:100dvh; overflow:hidden;
+  font-family:var(--body-font); color:var(--text-hi);
+  background:
+    radial-gradient(ellipse at 30% 0%, var(--wood-4), transparent 60%),
+    radial-gradient(ellipse at 80% 100%, var(--wood-3), transparent 55%),
+    linear-gradient(160deg, var(--wood-1), var(--wood-2) 55%, var(--wood-1));
+  background-attachment:fixed;
+  position:relative;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.18; mix-blend-mode:overlay;
+  background-image:
+    repeating-linear-gradient(95deg, rgba(0,0,0,.4) 0 2px, transparent 2px 5px),
+    repeating-linear-gradient(95deg, rgba(255,255,255,.06) 0 1px, transparent 1px 6px);
+}
+#app{position:relative; z-index:1; width:100%; height:100vh; height:100dvh;}
+.screen{
+  position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center;
+  padding:18px; overflow-y:auto; -webkit-overflow-scrolling:touch;
+}
+.screen.active{display:flex;}
+.screen.top{justify-content:flex-start;}
+
+/* Glass panels */
+.glass{
+  background:var(--panel-bg);
+  border:1px solid var(--panel-border);
+  border-radius:var(--radius-lg);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:var(--shadow-deep), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* ---------- Logo / brand ---------- */
+.brand{ text-align:center; margin-bottom:8px; }
+.brand-mark{
+  width:96px; height:96px; margin:0 auto 10px; border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 30%, var(--brass-bright), var(--brass) 45%, #6d5321 100%);
+  box-shadow:0 10px 30px rgba(0,0,0,.5), inset 0 3px 6px rgba(255,255,255,.5), inset 0 -6px 10px rgba(0,0,0,.4);
+  position:relative;
+}
+.brand-mark::after{
+  content:""; position:absolute; inset:14px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, var(--coin-queen-a), var(--coin-queen-b));
+  box-shadow:inset 0 2px 4px rgba(255,255,255,.5), inset 0 -4px 6px rgba(0,0,0,.4);
+}
+h1.brand-title{
+  font-family:var(--ui-font); font-weight:700; letter-spacing:.06em;
+  font-size:clamp(28px,7vw,44px); margin:0; text-transform:uppercase;
+  background:linear-gradient(180deg, var(--brass-bright), var(--brass) 60%, #8a6a2c);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 2px 0 rgba(0,0,0,.3);
+}
+.brand-sub{ font-size:12px; letter-spacing:.35em; text-transform:uppercase; color:var(--text-lo); margin-top:4px;}
+
+/* ---------- Buttons ---------- */
+.btn{
+  font-family:var(--body-font); font-weight:600; font-size:15px; letter-spacing:.02em;
+  padding:14px 22px; border-radius:14px; border:1px solid var(--panel-border);
+  cursor:pointer; color:var(--text-hi); position:relative; overflow:hidden;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+  transition:transform .12s ease, box-shadow .12s ease;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  -webkit-user-select:none; user-select:none;
+}
+.btn:active{ transform:scale(.96); }
+.btn-primary{
+  background:linear-gradient(180deg, var(--brass-bright), var(--brass) 70%, #6d5321);
+  color:#241705; border:1px solid rgba(0,0,0,.25);
+  box-shadow:0 8px 20px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.6);
+  font-weight:700;
+}
+.btn-ghost{ background:rgba(255,255,255,.04); }
+.btn-block{ width:100%; }
+.btn-row{ display:flex; gap:10px; width:100%; }
+.btn-sm{ padding:10px 14px; font-size:13px; border-radius:10px;}
+.btn[disabled]{ opacity:.4; pointer-events:none; }
+.icon-btn{
+  width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.06); border:1px solid var(--panel-border); color:var(--text-hi); cursor:pointer; font-size:18px;
+}
+.icon-btn:active{ transform:scale(.92); }
+
+/* ---------- Menu container ---------- */
+.menu-card{ width:min(420px,92vw); padding:28px 22px; display:flex; flex-direction:column; gap:12px; align-items:center;}
+.menu-list{ width:100%; display:flex; flex-direction:column; gap:10px; margin-top:6px;}
+.section-title{ font-family:var(--ui-font); font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--text-lo); text-align:center; margin:14px 0 2px;}
+.option-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%;}
+.option-card{
+  padding:16px 10px; border-radius:14px; border:1px solid var(--panel-border); background:rgba(255,255,255,.04);
+  text-align:center; cursor:pointer; transition:.15s;
+}
+.option-card.selected{ border-color:var(--brass); background:rgba(201,160,78,.18); box-shadow:0 0 0 1px var(--brass) inset;}
+.option-card .oc-title{ font-weight:700; font-size:14px; }
+.option-card .oc-sub{ font-size:11px; color:var(--text-lo); margin-top:3px;}
+
+/* ---------- Top bar in-game ---------- */
+.topbar{
+  position:absolute; top:0; left:0; right:0; z-index:5;
+  display:flex; align-items:center; justify-content:space-between; padding:10px 12px;
+  padding-top:max(10px, env(safe-area-inset-top));
+}
+.player-chip{
+  display:flex; align-items:center; gap:8px; padding:6px 12px 6px 6px; border-radius:30px;
+}
+.chip-dot{ width:28px; height:28px; border-radius:50%; flex-shrink:0; box-shadow:inset 0 2px 3px rgba(255,255,255,.5), inset 0 -3px 4px rgba(0,0,0,.4);}
+.chip-dot.white{ background:radial-gradient(circle at 35% 30%, var(--coin-white-a), var(--coin-white-b));}
+.chip-dot.black{ background:radial-gradient(circle at 35% 30%, var(--coin-black-a), var(--coin-black-b));}
+.player-chip.active{ box-shadow:0 0 0 2px var(--brass-bright), var(--shadow-deep); }
+.chip-info{ line-height:1.15; }
+.chip-name{ font-size:12px; font-weight:700; }
+.chip-score{ font-size:11px; color:var(--text-lo);}
+.topbar-center{ display:flex; flex-direction:column; align-items:center; gap:2px;}
+.turn-indicator{ font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--brass-bright); font-weight:700;}
+.foul-flag{ font-size:10px; color:var(--lacquer); font-weight:700; visibility:hidden;}
+.foul-flag.show{ visibility:visible; }
+.topbar-actions{ display:flex; gap:8px;}
+
+/* ---------- Board wrap ---------- */
+.game-wrap{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:70px 10px 150px;}
+#boardCanvas{ touch-action:none; border-radius:10px; max-width:100%; max-height:100%; }
+
+/* ---------- Bottom controls ---------- */
+.bottombar{
+  position:absolute; left:0; right:0; bottom:0; z-index:5; padding:10px 14px;
+  padding-bottom:max(10px, env(safe-area-inset-bottom));
+  display:flex; flex-direction:column; gap:8px; align-items:center;
+}
+.power-wrap{ width:min(420px,92vw); display:flex; align-items:center; gap:10px;}
+.power-track{ flex:1; height:10px; border-radius:8px; background:rgba(0,0,0,.4); overflow:hidden; border:1px solid var(--panel-border);}
+.power-fill{ height:100%; width:0%; background:linear-gradient(90deg, #58c96a, #e8c876, var(--lacquer)); transition:width .05s linear;}
+.slider-wrap{ width:min(420px,92vw); display:flex; align-items:center; gap:10px; }
+input[type=range]{ flex:1; accent-color:var(--brass); height:24px; }
+.hint-text{ font-size:11px; color:var(--text-lo); text-align:center; min-height:14px;}
+
+/* ---------- Overlays ---------- */
+.overlay{
+  position:absolute; inset:0; z-index:20; display:none; align-items:center; justify-content:center;
+  background:rgba(8,4,2,.55);
+}
+.overlay.active{ display:flex; }
+.overlay-card{ width:min(380px,90vw); padding:26px 22px; text-align:center; display:flex; flex-direction:column; gap:12px; align-items:center;}
+.result-title{ font-family:var(--ui-font); font-size:26px; font-weight:700; color:var(--brass-bright); }
+.result-sub{ font-size:13px; color:var(--text-lo); }
+.result-stats{ width:100%; display:flex; justify-content:space-around; margin:8px 0; }
+.result-stat b{ display:block; font-size:20px; color:var(--text-hi); }
+.result-stat span{ font-size:10px; color:var(--text-lo); text-transform:uppercase; letter-spacing:.1em; }
+
+/* ---------- Settings / Stats lists ---------- */
+.row-item{
+  display:flex; align-items:center; justify-content:space-between; width:100%; padding:12px 4px;
+  border-bottom:1px solid var(--panel-border); font-size:14px;
+}
+.row-item:last-child{ border-bottom:none; }
+.switch{ width:46px; height:26px; border-radius:20px; background:rgba(255,255,255,.1); position:relative; cursor:pointer; border:1px solid var(--panel-border);}
+.switch::after{ content:""; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:var(--text-lo); transition:.2s; }
+.switch.on{ background:rgba(201,160,78,.4); }
+.switch.on::after{ left:22px; background:var(--brass-bright); }
+.stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; margin-top:10px;}
+.stat-box{ padding:14px 10px; border-radius:12px; background:rgba(255,255,255,.04); border:1px solid var(--panel-border); text-align:center;}
+.stat-box b{ display:block; font-size:20px; }
+.stat-box span{ font-size:10px; color:var(--text-lo); text-transform:uppercase; letter-spacing:.08em;}
+.achv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; margin-top:10px;}
+.achv{ padding:12px 8px; border-radius:12px; background:rgba(255,255,255,.03); border:1px solid var(--panel-border); text-align:center; opacity:.4;}
+.achv.unlocked{ opacity:1; border-color:var(--brass); background:rgba(201,160,78,.12);}
+.achv .a-ic{ font-size:22px; }
+.achv .a-name{ font-size:11px; font-weight:700; margin-top:4px;}
+
+/* ---------- Loading ---------- */
+#loadingScreen{ z-index:100; background:linear-gradient(160deg, var(--wood-1), var(--wood-2)); }
+.load-ring{ width:70px; height:70px; border-radius:50%; border:4px solid rgba(201,160,78,.2); border-top-color:var(--brass-bright); animation:spin 1s linear infinite; margin-bottom:18px;}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.load-text{ color:var(--text-lo); font-size:12px; letter-spacing:.2em; text-transform:uppercase;}
+
+/* ---------- Confetti ---------- */
+.confetti-piece{ position:absolute; top:-10px; width:8px; height:14px; opacity:.9; z-index:30; pointer-events:none; }
+
+/* ---------- Toast ---------- */
+#toast{
+  position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); z-index:200;
+  padding:10px 18px; border-radius:30px; font-size:13px; opacity:0; transition:.25s;
+  background:rgba(20,12,6,.9); border:1px solid var(--panel-border); pointer-events:none;
+}
+#toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* scrollbars */
+.screen::-webkit-scrollbar{ width:6px; }
+.screen::-webkit-scrollbar-thumb{ background:rgba(201,160,78,.4); border-radius:6px; }
+
+@media (max-width:420px){
+  .brand-mark{ width:76px; height:76px; }
+  h1.brand-title{ font-size:26px; }
+  .menu-card{ padding:22px 16px; }
+}
+@media (orientation:landscape) and (max-height:480px){
+  .game-wrap{ padding:56px 10px 90px; }
+  .topbar{ padding:6px 10px; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ LOADING ============ -->
+  <div class="screen active" id="loadingScreen">
+    <div class="load-ring"></div>
+    <div class="brand-mark" style="width:60px;height:60px;margin-bottom:14px;"></div>
+    <div class="load-text" id="loadText">Polishing the board…</div>
+  </div>
+
+  <!-- ============ HOME ============ -->
+  <div class="screen" id="homeScreen">
+    <div class="glass menu-card">
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <h1 class="brand-title">Carrom Royale</h1>
+        <div class="brand-sub">Walnut &amp; Brass Edition</div>
+      </div>
+      <div class="menu-list">
+        <button class="btn btn-primary btn-block" data-sound data-nav="modeScreen">▶ Play</button>
+        <div class="btn-row">
+          <button class="btn btn-ghost btn-block" data-sound data-nav="statsScreen">📊 Stats</button>
+          <button class="btn btn-ghost btn-block" data-sound data-nav="achvScreen">🏆 Achievements</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ghost btn-block" data-sound data-nav="settingsScreen">⚙ Settings</button>
+          <button class="btn btn-ghost btn-block" data-sound id="dailyRewardBtn">🎁 Daily</button>
+        </div>
+      </div>
+      <div class="hint-text" style="margin-top:6px;">Lvl <span id="homeLevel">1</span> · <span id="homeCoins">0</span> coins · <span id="homeXp">0</span> XP</div>
+    </div>
+  </div>
+
+  <!-- ============ MODE SELECT ============ -->
+  <div class="screen" id="modeScreen">
+    <div class="glass menu-card">
+      <div class="section-title">Choose Mode</div>
+      <div class="menu-list">
+        <button class="btn btn-primary btn-block" data-sound data-mode="ai" data-nav="difficultyScreen">🤖 Single Player</button>
+        <button class="btn btn-ghost btn-block" data-sound data-mode="local" data-nav="startLocal">👥 Local Multiplayer</button>
+        <button class="btn btn-ghost btn-block" data-sound data-mode="practice" data-nav="startPractice">🎯 Practice Mode</button>
+      </div>
+      <button class="btn btn-ghost btn-block btn-sm" data-sound data-nav="homeScreen" style="margin-top:10px;">← Back</button>
+    </div>
+  </div>
+
+  <!-- ============ DIFFICULTY ============ -->
+  <div class="screen" id="difficultyScreen">
+    <div class="glass menu-card">
+      <div class="section-title">Choose Difficulty</div>
+      <div class="menu-list">
+        <button class="btn btn-block" data-sound data-diff="easy" data-nav="startAI">🌱 Easy</button>
+        <button class="btn btn-block" data-sound data-diff="medium" data-nav="startAI">⚔ Medium</button>
+        <button class="btn btn-block" data-sound data-diff="hard" data-nav="startAI">🔥 Hard</button>
+      </div>
+      <button class="btn btn-ghost btn-block btn-sm" data-sound data-nav="modeScreen" style="margin-top:10px;">← Back</button>
+    </div>
+  </div>
+
+  <!-- ============ SETTINGS ============ -->
+  <div class="screen" id="settingsScreen">
+    <div class="glass menu-card" style="align-items:stretch;">
+      <div class="section-title">Settings</div>
+      <div class="row-item">Music <div class="switch" id="swMusic"></div></div>
+      <div class="row-item">Sound Effects <div class="switch" id="swSound"></div></div>
+      <div class="row-item">Vibration <div class="switch" id="swVibrate"></div></div>
+      <div class="row-item">Volume <input type="range" id="volumeSlider" min="0" max="100" value="70" style="width:120px;"></div>
+      <div class="row-item">Language
+        <select id="langSelect" style="background:rgba(255,255,255,.06); color:inherit; border-radius:8px; border:1px solid var(--panel-border); padding:6px;">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+        </select>
+      </div>
+      <div class="row-item">App Theme
+        <div class="btn-row" style="width:auto;">
+          <button class="btn btn-sm" data-sound data-ui-theme="dark">Dark</button>
+          <button class="btn btn-sm" data-sound data-ui-theme="light">Light</button>
+        </div>
+      </div>
+      <div class="section-title">Board Theme</div>
+      <div class="option-grid">
+        <div class="option-card" data-sound data-board-theme="classic-wood"><div class="oc-title">Classic Wood</div></div>
+        <div class="option-card" data-sound data-board-theme="dark-wood"><div class="oc-title">Dark Wood</div></div>
+        <div class="option-card" data-sound data-board-theme="marble"><div class="oc-title">Marble</div></div>
+        <div class="option-card" data-sound data-board-theme="neon"><div class="oc-title">Neon</div></div>
+      </div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-ghost btn-block btn-sm" data-sound id="fullscreenBtn">⛶ Fullscreen</button>
+        <button class="btn btn-ghost btn-block btn-sm" data-sound id="resetProgressBtn" style="color:var(--lacquer);">Reset Progress</button>
+      </div>
+      <button class="btn btn-ghost btn-block btn-sm" data-sound data-nav="homeScreen" style="margin-top:10px;">← Back</button>
+    </div>
+  </div>
+
+  <!-- ============ STATS ============ -->
+  <div class="screen" id="statsScreen">
+    <div class="glass menu-card">
+      <div class="section-title">Statistics</div>
+      <div class="stat-grid">
+        <div class="stat-box"><b id="statGames">0</b><span>Games</span></div>
+        <div class="stat-box"><b id="statWins">0</b><span>Wins</span></div>
+        <div class="stat-box"><b id="statLosses">0</b><span>Losses</span></div>
+        <div class="stat-box"><b id="statWinRate">0%</b><span>Win Rate</span></div>
+        <div class="stat-box"><b id="statCoins">0</b><span>Coins Earned</span></div>
+        <div class="stat-box"><b id="statXp">0</b><span>XP</span></div>
+        <div class="stat-box"><b id="statLevel">1</b><span>Level</span></div>
+        <div class="stat-box"><b id="statBest">—</b><span>Best Match</span></div>
+        <div class="stat-box" style="grid-column:1/3;"><b id="statFastest">—</b><span>Fastest Victory</span></div>
+      </div>
+      <button class="btn btn-ghost btn-block btn-sm" data-sound data-nav="homeScreen" style="margin-top:14px;">← Back</button>
+    </div>
+  </div>
+
+  <!-- ============ ACHIEVEMENTS ============ -->
+  <div class="screen" id="achvScreen">
+    <div class="glass menu-card">
+      <div class="section-title">Achievements</div>
+      <div class="achv-grid" id="achvGrid"></div>
+      <button class="btn btn-ghost btn-block btn-sm" data-sound data-nav="homeScreen" style="margin-top:14px;">← Back</button>
+    </div>
+  </div>
+
+  <!-- ============ GAME SCREEN ============ -->
+  <div class="screen" id="gameScreen">
+    <div class="topbar">
+      <div class="glass player-chip" id="chipP1"><div class="chip-dot white"></div><div class="chip-info"><div class="chip-name" id="p1Name">You</div><div class="chip-score">Coins <span id="p1Score">0</span></div></div></div>
+      <div class="topbar-center">
+        <div class="turn-indicator" id="turnIndicator">Your Turn</div>
+        <div class="foul-flag" id="foulFlag">FOUL!</div>
+      </div>
+      <div class="topbar-actions">
+        <div class="icon-btn" data-sound id="pauseBtn">⏸</div>
+      </div>
+    </div>
+    <div class="glass player-chip" id="chipP2" style="position:absolute; top:64px; right:12px; z-index:5;"><div class="chip-info" style="text-align:right;"><div class="chip-name" id="p2Name">AI</div><div class="chip-score">Coins <span id="p2Score">0</span></div></div><div class="chip-dot black"></div></div>
+
+    <div class="game-wrap">
+      <canvas id="boardCanvas" width="800" height="800"></canvas>
+    </div>
+
+    <div class="bottombar">
+      <div class="hint-text" id="gameHint">Drag on the board — pull back &amp; release to strike</div>
+      <div class="power-wrap glass" style="padding:8px 14px;">
+        <span style="font-size:11px;">PWR</span>
+        <div class="power-track"><div class="power-fill" id="powerFill"></div></div>
+      </div>
+      <div class="slider-wrap glass" style="padding:6px 14px;">
+        <span style="font-size:11px;">◀ AIM ▶</span>
+        <input type="range" id="strikerSlider" min="-100" max="100" value="0">
+        <button class="icon-btn btn-sm" style="width:34px;height:34px;" id="undoBtn" data-sound title="Undo (Practice)">↺</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAUSE OVERLAY ============ -->
+  <div class="overlay" id="pauseOverlay">
+    <div class="glass overlay-card">
+      <div class="result-title">Paused</div>
+      <button class="btn btn-primary btn-block" data-sound id="resumeBtn">▶ Resume</button>
+      <button class="btn btn-ghost btn-block" data-sound id="restartBtn">↻ Restart</button>
+      <button class="btn btn-ghost btn-block" data-sound data-nav="homeScreen" id="quitBtn">🏠 Quit to Menu</button>
+    </div>
+  </div>
+
+  <!-- ============ RESULT OVERLAY ============ -->
+  <div class="overlay" id="resultOverlay">
+    <div class="glass overlay-card" id="resultCard">
+      <div class="result-title" id="resultTitle">You Win!</div>
+      <div class="result-sub" id="resultSub">Board cleared in style.</div>
+      <div class="result-stats">
+        <div class="result-stat"><b id="resXp">+0</b><span>XP</span></div>
+        <div class="result-stat"><b id="resCoins">+0</b><span>Coins</span></div>
+        <div class="result-stat"><b id="resTime">0:00</b><span>Time</span></div>
+      </div>
+      <button class="btn btn-primary btn-block" data-sound id="playAgainBtn">↻ Play Again</button>
+      <button class="btn btn-ghost btn-block" data-sound data-nav="homeScreen">🏠 Home</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ============================================================
+   STORAGE
+   ============================================================ */
+const DEFAULT_STATE = {
+  coins:100, xp:0, level:1, wins:0, losses:0, matches:0,
+  bestScore:0, fastestWin:null, uiTheme:"dark", boardTheme:"classic-wood",
+  lang:"en", music:true, sound:true, vibrate:true, volume:70,
+  lastDaily:0, achievements:{}, history:[]
+};
+const Store = {
+  data: null,
+  load(){
+    try{
+      const raw = localStorage.getItem("carromRoyaleSave");
+      this.data = raw ? Object.assign({}, DEFAULT_STATE, JSON.parse(raw)) : Object.assign({}, DEFAULT_STATE);
+    }catch(e){ this.data = Object.assign({}, DEFAULT_STATE); }
+    return this.data;
+  },
+  save(){ try{ localStorage.setItem("carromRoyaleSave", JSON.stringify(this.data)); }catch(e){} },
+  reset(){ this.data = Object.assign({}, DEFAULT_STATE); this.save(); }
+};
+Store.load();
+
+/* ============================================================
+   AUDIO ENGINE (Web Audio API synthesis only)
+   ============================================================ */
+const Audio_ = {
+  ctx:null, musicNodes:null, musicPlaying:false,
+  init(){ if(!this.ctx){ try{ this.ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } },
+  resume(){ this.init(); if(this.ctx && this.ctx.state==="suspended"){ this.ctx.resume(); } },
+  vol(){ return (Store.data.volume/100); },
+  tone(freq,dur,type,gainMul){
+    if(!Store.data.sound || !this.ctx) return;
+    const t0=this.ctx.currentTime;
+    const osc=this.ctx.createOscillator(); const g=this.ctx.createGain();
+    osc.type=type||"sine"; osc.frequency.setValueAtTime(freq,t0);
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.001,(gainMul||0.3)*this.vol()),t0+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    osc.connect(g); g.connect(this.ctx.destination);
+    osc.start(t0); osc.stop(t0+dur+0.02);
+  },
+  noiseHit(dur,gainMul,filterFreq){
+    if(!Store.data.sound || !this.ctx) return;
+    const t0=this.ctx.currentTime;
+    const bufferSize=this.ctx.sampleRate*dur;
+    const buffer=this.ctx.createBuffer(1,bufferSize,this.ctx.sampleRate);
+    const data=buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){ data[i]=(Math.random()*2-1)*(1-i/bufferSize); }
+    const src=this.ctx.createBufferSource(); src.buffer=buffer;
+    const filt=this.ctx.createBiquadFilter(); filt.type="bandpass"; filt.frequency.value=filterFreq||1200;
+    const g=this.ctx.createGain(); g.gain.setValueAtTime((gainMul||0.4)*this.vol(),t0);
+    g.gain.exponentialRampToValueAtTime(0.001,t0+dur);
+    src.connect(filt); filt.connect(g); g.connect(this.ctx.destination);
+    src.start(t0);
+  },
+  click(){ this.tone(880,0.06,"triangle",0.15); },
+  coinHit(){ this.noiseHit(0.09,0.5,1600); },
+  wallHit(){ this.noiseHit(0.07,0.35,900); },
+  strikerHit(){ this.tone(220,0.08,"square",0.2); this.noiseHit(0.06,0.3,700); },
+  pocket(){ this.tone(660,0.12,"sine",0.3); setTimeout(()=>this.tone(990,0.15,"sine",0.25),70); },
+  queen(){ this.tone(523,0.15,"sine",0.3); setTimeout(()=>this.tone(659,0.15,"sine",0.3),90); setTimeout(()=>this.tone(784,0.25,"sine",0.3),180); },
+  foul(){ this.tone(160,0.28,"sawtooth",0.25); },
+  win(){ [523,659,784,1046].forEach((f,i)=>setTimeout(()=>this.tone(f,0.3,"sine",0.28),i*130)); },
+  startMusic(){
+    this.init();
+    if(!Store.data.music || !this.ctx || this.musicPlaying) return;
+    this.musicPlaying=true;
+    const master=this.ctx.createGain(); master.gain.value=0.06*this.vol();
+    master.connect(this.ctx.destination);
+    const notes=[196,220,246,196,262,220,196,246];
+    let i=0;
+    const step=()=>{
+      if(!this.musicPlaying) return;
+      const f=notes[i%notes.length]; i++;
+      const t0=this.ctx.currentTime;
+      const o=this.ctx.createOscillator(); const g=this.ctx.createGain();
+      o.type="sine"; o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.5,t0+0.4);
+      g.gain.exponentialRampToValueAtTime(0.0001,t0+1.6);
+      o.connect(g); g.connect(master); o.start(t0); o.stop(t0+1.7);
+      this._musicTimeout=setTimeout(step,900);
+    };
+    this._musicMaster=master; step();
+  },
+  stopMusic(){ this.musicPlaying=false; if(this._musicTimeout) clearTimeout(this._musicTimeout); if(this._musicMaster) try{this._musicMaster.disconnect();}catch(e){} }
+};
+
+/* ============================================================
+   UI HELPERS
+   ============================================================ */
+function $(id){ return document.getElementById(id); }
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+function toast(msg){
+  const t=$("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(toast._h); toast._h=setTimeout(()=>t.classList.remove("show"),1800);
+}
+function vibrate(ms){ if(Store.data.vibrate && navigator.vibrate){ try{ navigator.vibrate(ms); }catch(e){} } }
+
+function applyTheme(){
+  document.documentElement.setAttribute("data-theme", Store.data.boardTheme);
+  document.documentElement.setAttribute("data-ui", Store.data.uiTheme);
+  document.querySelectorAll("[data-board-theme]").forEach(el=>{
+    el.classList.toggle("selected", el.dataset.boardTheme===Store.data.boardTheme);
+  });
+}
+function syncSettingsUI(){
+  $("swMusic").classList.toggle("on", Store.data.music);
+  $("swSound").classList.toggle("on", Store.data.sound);
+  $("swVibrate").classList.toggle("on", Store.data.vibrate);
+  $("volumeSlider").value = Store.data.volume;
+  $("langSelect").value = Store.data.lang;
+  applyTheme();
+}
+function syncHomeUI(){
+  $("homeLevel").textContent = Store.data.level;
+  $("homeCoins").textContent = Store.data.coins;
+  $("homeXp").textContent = Store.data.xp;
+}
+function syncStatsUI(){
+  const d=Store.data;
+  $("statGames").textContent=d.matches;
+  $("statWins").textContent=d.wins;
+  $("statLosses").textContent=d.losses;
+  $("statWinRate").textContent = d.matches? Math.round(d.wins/d.matches*100)+"%":"0%";
+  $("statCoins").textContent=d.coins;
+  $("statXp").textContent=d.xp;
+  $("statLevel").textContent=d.level;
+  $("statBest").textContent = d.bestScore || "—";
+  $("statFastest").textContent = d.fastestWin? d.fastestWin+"s":"—";
+}
+const ACHIEVEMENTS = [
+  {id:"first_win", name:"First Win", ic:"🥇", cond:d=>d.wins>=1},
+  {id:"five_wins", name:"5 Wins", ic:"⭐", cond:d=>d.wins>=5},
+  {id:"ten_wins", name:"10 Wins", ic:"🌟", cond:d=>d.wins>=10},
+  {id:"queen_master", name:"Queen Master", ic:"👑", cond:d=>d._queenCovers>=5},
+  {id:"pocket_master", name:"Pocket Master", ic:"🎯", cond:d=>d._pockets>=50},
+  {id:"champion", name:"Champion", ic:"🏆", cond:d=>d.wins>=20},
+  {id:"ai_slayer", name:"AI Slayer", ic:"🤖", cond:d=>d._aiHardWins>=1},
+  {id:"perfect_match", name:"Perfect Match", ic:"💎", cond:d=>d._perfect>=1},
+  {id:"beginner", name:"Beginner", ic:"🌱", cond:d=>d.matches>=1},
+  {id:"expert", name:"Expert", ic:"🎓", cond:d=>d.level>=10},
+];
+function checkAchievements(){
+  const d=Store.data; let unlocked=[];
+  ACHIEVEMENTS.forEach(a=>{
+    if(!d.achievements[a.id] && a.cond(d)){ d.achievements[a.id]=true; unlocked.push(a); }
+  });
+  Store.save();
+  unlocked.forEach(a=> toast("🏆 Achievement unlocked: "+a.name));
+  renderAchievements();
+}
+function renderAchievements(){
+  const grid=$("achvGrid"); grid.innerHTML="";
+  ACHIEVEMENTS.forEach(a=>{
+    const on = !!Store.data.achievements[a.id];
+    const el=document.createElement("div");
+    el.className="achv"+(on?" unlocked":"");
+    el.innerHTML='<div class="a-ic">'+a.ic+'</div><div class="a-name">'+a.name+'</div>';
+    grid.appendChild(el);
+  });
+}
+
+/* ============================================================
+   NAVIGATION WIRING
+   ============================================================ */
+let pendingMode="ai", pendingDiff="medium";
+document.addEventListener("click", function(e){
+  const el = e.target.closest("[data-nav],[data-sound]");
+  if(!el) return;
+  if(el.hasAttribute("data-sound")){ Audio_.resume(); Audio_.click(); vibrate(8); }
+  if(el.dataset.mode) pendingMode = el.dataset.mode;
+  if(el.dataset.diff) pendingDiff = el.dataset.diff;
+  if(el.dataset.uiTheme){ Store.data.uiTheme=el.dataset.uiTheme; Store.save(); applyTheme(); }
+  if(el.dataset.boardTheme){ Store.data.boardTheme=el.dataset.boardTheme; Store.save(); applyTheme(); if(Game.active) Game.buildBoardGradients(); }
+  const nav = el.dataset.nav;
+  if(!nav) return;
+  if(nav==="startAI"){ startGame("ai", pendingDiff); return; }
+  if(nav==="startLocal"){ startGame("local"); return; }
+  if(nav==="startPractice"){ startGame("practice"); return; }
+  showScreen(nav);
+  if(nav==="statsScreen") syncStatsUI();
+  if(nav==="achvScreen") renderAchievements();
+  if(nav==="homeScreen") syncHomeUI();
+});
+
+$("swMusic").addEventListener("click", ()=>{ Store.data.music=!Store.data.music; Store.save(); syncSettingsUI(); if(Store.data.music) Audio_.startMusic(); else Audio_.stopMusic(); });
+$("swSound").addEventListener("click", ()=>{ Store.data.sound=!Store.data.sound; Store.save(); syncSettingsUI(); });
+$("swVibrate").addEventListener("click", ()=>{ Store.data.vibrate=!Store.data.vibrate; Store.save(); syncSettingsUI(); });
+$("volumeSlider").addEventListener("input", e=>{ Store.data.volume=+e.target.value; Store.save(); });
+$("langSelect").addEventListener("change", e=>{ Store.data.lang=e.target.value; Store.save(); applyLanguage(); });
+$("fullscreenBtn").addEventListener("click", ()=>{
+  if(!document.fullscreenElement){ document.documentElement.requestFullscreen?.().catch(()=>{}); }
+  else{ document.exitFullscreen?.(); }
+});
+$("resetProgressBtn").addEventListener("click", ()=>{
+  if(confirm("Reset all progress? This cannot be undone.")){ Store.reset(); syncSettingsUI(); syncHomeUI(); syncStatsUI(); renderAchievements(); toast("Progress reset"); }
+});
+$("dailyRewardBtn").addEventListener("click", ()=>{
+  const now=Date.now(); const day=86400000;
+  if(now - Store.data.lastDaily < day){ toast("Come back later for your next reward!"); return; }
+  Store.data.lastDaily = now; const reward = 20+Math.floor(Math.random()*30);
+  Store.data.coins += reward; Store.save(); syncHomeUI();
+  toast("🎁 Daily Reward: +"+reward+" coins!");
+});
+
+const I18N = {
+  en:{ yourTurn:"Your Turn", aiTurn:"AI's Turn", p1Turn:"Player 1's Turn", p2Turn:"Player 2's Turn", you:"You", ai:"AI", p1:"Player 1", p2:"Player 2" },
+  hi:{ yourTurn:"आपकी बारी", aiTurn:"AI की बारी", p1Turn:"खिलाड़ी 1 की बारी", p2Turn:"खिलाड़ी 2 की बारी", you:"आप", ai:"AI", p1:"खिलाड़ी 1", p2:"खिलाड़ी 2" }
+};
+function t(k){ return (I18N[Store.data.lang]||I18N.en)[k] || k; }
+function applyLanguage(){ /* labels refreshed at render time via t() */ }
+
+/* keyboard shortcuts */
+document.addEventListener("keydown", e=>{
+  if(!Game.active) return;
+  if(e.code==="Space"){ e.preventDefault(); togglePause(); }
+  else if(e.key==="r"||e.key==="R"){ restartGame(); }
+  else if(e.key==="m"||e.key==="M"){ Store.data.sound=!Store.data.sound; Store.data.music=!Store.data.music; Store.save(); syncSettingsUI(); if(Store.data.music) Audio_.startMusic(); else Audio_.stopMusic(); toast("Muted toggled"); }
+  else if(e.key==="f"||e.key==="F"){ $("fullscreenBtn").click(); }
+  else if(e.key==="Escape"){ if($("pauseOverlay").classList.contains("active")) resumeGame(); else togglePause(); }
+});
+
+/* ============================================================
+   PHYSICS + GAME ENGINE
+   ============================================================ */
+const BOARD = 800;          // logical units
+const CUSHION = 46;         // inset border thickness
+const PLAY_MIN = CUSHION, PLAY_MAX = BOARD-CUSHION;
+const POCKET_R = 30;
+const COIN_R = 17;
+const STRIKER_R = 21;
+const FRICTION = 0.9865;
+const MIN_VEL = 0.06;
+const MAX_PULL = 170;
+const MAX_SPEED = 34;
+const RESTITUTION_WALL = 0.78;
+const RESTITUTION_COIN = 0.97;
+
+function dist(ax,ay,bx,by){ return Math.hypot(ax-bx, ay-by); }
+
+class Coin{
+  constructor(x,y,type){ // type: 'white' | 'black' | 'queen' | 'striker'
+    this.x=x; this.y=y; this.vx=0; this.vy=0; this.type=type;
+    this.r = type==="striker"?STRIKER_R:COIN_R;
+    this.pocketed=false; this.anim=0;
+  }
+  speed(){ return Math.hypot(this.vx,this.vy); }
+}
+
+const Game = {
+  active:false, mode:"ai", difficulty:"medium",
+  canvas:null, ctx:null,
+  coins:[], pockets:[],
+  turn:1, // 1 = bottom player(p1), 2 = top player(p2/AI)
+  p1Type:"white", p2Type:"black",
+  scores:{1:0,2:0}, // pocketed count
+  queenPocketed:false, queenCovered:false, queenOwner:0,
+  running:false, settling:false, paused:false,
+  aiming:false, aimVec:{x:0,y:0}, power:0,
+  strikerBaseOffset:0,
+  history:[], // for undo in practice
+  startTime:0, elapsedPaused:0, pauseStart:0,
+  turnFoul:false, pocketedThisTurn:[],
+  frameHandle:null,
+  boardGrad:null,
+
+  init(canvasId){
+    this.canvas = $(canvasId);
+    this.ctx = this.canvas.getContext("2d");
+    this.setupPointerEvents();
+    window.addEventListener("resize", ()=>this.resize());
+    this.resize();
+  },
+  resize(){
+    const wrap = this.canvas.parentElement;
+    const size = Math.min(wrap.clientWidth, wrap.clientHeight);
+    const dpr = Math.min(window.devicePixelRatio||1, 2);
+    this.canvas.style.width = size+"px";
+    this.canvas.style.height = size+"px";
+    this.canvas.width = BOARD*dpr;
+    this.canvas.height = BOARD*dpr;
+    this.ctx.setTransform(dpr,0,0,dpr,0,0);
+    this.buildBoardGradients();
+  },
+  buildBoardGradients(){
+    const cs = getComputedStyle(document.documentElement);
+    const a = cs.getPropertyValue("--board-cloth-a").trim();
+    const b = cs.getPropertyValue("--board-cloth-b").trim();
+    const g = this.ctx.createLinearGradient(0,0,BOARD,BOARD);
+    g.addColorStop(0,a); g.addColorStop(1,b);
+    this.boardGrad = g;
+  },
+  setupPointerEvents(){
+    const cv = this.canvas;
+    let dragging=false;
+    const toLogical=(clientX,clientY)=>{
+      const rect=cv.getBoundingClientRect();
+      const sx=(clientX-rect.left)/rect.width*BOARD;
+      const sy=(clientY-rect.top)/rect.height*BOARD;
+      return {x:sx,y:sy};
+    };
+    const start=(cx,cy)=>{
+      if(!this.canShoot()) return;
+      dragging=true; this.aiming=true;
+      this._dragCur = toLogical(cx,cy);
+    };
+    const move=(cx,cy)=>{
+      if(!dragging) return;
+      this._dragCur = toLogical(cx,cy);
+    };
+    const end=()=>{
+      if(!dragging) return;
+      dragging=false; this.aiming=false;
+      this.releaseShot();
+    };
+    cv.addEventListener("pointerdown", e=>{ cv.setPointerCapture(e.pointerId); start(e.clientX,e.clientY); });
+    cv.addEventListener("pointermove", e=> move(e.clientX,e.clientY));
+    cv.addEventListener("pointerup", end);
+    cv.addEventListener("pointercancel", end);
+    $("strikerSlider").addEventListener("input", e=>{
+      this.strikerBaseOffset = (+e.target.value)/100 * (PLAY_MAX-PLAY_MIN-STRIKER_R*2)/2;
+      this.positionStriker();
+    });
+  },
+  canShoot(){
+    return this.running && !this.paused && !this.settling && this.currentIsHuman();
+  },
+  currentIsHuman(){
+    if(this.mode==="ai") return this.turn===1;
+    return true; // local + practice: both human turns handled via pass&play
+  },
+
+  newGame(mode, difficulty){
+    this.mode=mode; this.difficulty=difficulty||"medium";
+    this.coins=[]; this.turn=1; this.scores={1:0,2:0};
+    this.queenPocketed=false; this.queenCovered=false; this.queenOwner=0;
+    this.running=true; this.paused=false; this.settling=false;
+    this.history=[]; this.startTime=Date.now(); this.elapsedPaused=0;
+    this.pendingQueenCoverFor=0;
+
+    const cx=BOARD/2, cy=BOARD/2;
+    const positions = this.hexPositions(cx,cy,COIN_R);
+    const order = ["black","white","black","white","black","white","queen","white","black","white","black","white","black","white","black","white","black","white","black"];
+    // Standard-ish arrangement: alternate ring, queen center
+    positions.forEach((p,i)=>{
+      const type = order[i % order.length];
+      this.coins.push(new Coin(p.x,p.y,type));
+    });
+    // Ensure exactly one queen, 9 white, 9 black by rebalancing
+    this.rebalanceCoins();
+
+    this.striker = new Coin(cx, PLAY_MAX-40, "striker");
+    this.coins.push(this.striker);
+    this.strikerBaseOffset=0;
+    $("strikerSlider").value=0;
+    this.positionStriker();
+
+    this.updateHud();
+    this.buildBoardGradients();
+    if(!this.frameHandle) this.loop();
+  },
+  rebalanceCoins(){
+    const nonQueen = this.coins.filter(c=>c.type!=="queen");
+    let whites=0, blacks=0;
+    this.coins.forEach(c=>{
+      if(c.type==="white") whites++;
+      if(c.type==="black") blacks++;
+    });
+    // force 9/9 by reassigning extras/deficits deterministically
+    const all = this.coins.filter(c=>c.type==="white"||c.type==="black");
+    let w=0,b=0;
+    all.forEach((c,i)=>{ c.type = (i%2===0)?"white":"black"; });
+  },
+  hexPositions(cx,cy,r){
+    // 19 coins: center + rings, simple circular packing approximation
+    const pts=[{x:cx,y:cy}];
+    const ringCounts=[6,12];
+    let radius = r*2.05;
+    ringCounts.forEach((count,ri)=>{
+      const rad = radius*(ri+1);
+      for(let i=0;i<count;i++){
+        const ang = (Math.PI*2/count)*i + (ri%2? Math.PI/count:0);
+        pts.push({x:cx+Math.cos(ang)*rad, y:cy+Math.sin(ang)*rad});
+      }
+    });
+    return pts.slice(0,19);
+  },
+  positionStriker(){
+    if(!this.striker) return;
+    const midX = BOARD/2 + this.strikerBaseOffset;
+    const clampedX = Math.max(PLAY_MIN+STRIKER_R+10, Math.min(PLAY_MAX-STRIKER_R-10, midX));
+    this.striker.x = clampedX;
+    this.striker.y = (this.turn===1) ? PLAY_MAX-40 : PLAY_MIN+40;
+    this.striker.vx=0; this.striker.vy=0;
+  },
+
+  releaseShot(){
+    if(!this.canShoot()) return;
+    const d = this._dragCur; if(!d) return;
+    const sx=this.striker.x, sy=this.striker.y;
+    const dx = sx-d.x, dy = sy-d.y;
+    const len = Math.hypot(dx,dy);
+    if(len < 12){ this.power=0; return; }
+    const power = Math.min(1, len/MAX_PULL);
+    const nx = dx/len, ny = dy/len;
+    this.saveHistory();
+    this.striker.vx = nx*power*MAX_SPEED;
+    this.striker.vy = ny*power*MAX_SPEED;
+    Audio_.strikerHit(); vibrate(15);
+    this.turnFoul=false; this.pocketedThisTurn=[];
+    this.settling=true;
+    this.power=0; $("powerFill").style.width="0%";
+    $("gameHint").textContent = "…";
+  },
+  saveHistory(){
+    if(this.mode!=="practice") return;
+    const snap = this.coins.map(c=>({x:c.x,y:c.y,type:c.type,pocketed:c.pocketed}));
+    this.history.push({snap, scores:Object.assign({},this.scores), turn:this.turn});
+    if(this.history.length>20) this.history.shift();
+  },
+  undo(){
+    if(this.mode!=="practice" || !this.history.length){ toast("Undo only in Practice mode"); return; }
+    const last = this.history.pop();
+    last.snap.forEach((s,i)=>{ const c=this.coins[i]; if(c){ c.x=s.x; c.y=s.y; c.type=s.type; c.pocketed=s.pocketed; c.vx=0; c.vy=0; } });
+    this.scores = last.scores; this.turn = last.turn;
+    this.settling=false; this.updateHud();
+    toast("Shot undone");
+  },
+
+  loop(){
+    this.frameHandle = requestAnimationFrame(()=>this.loop());
+    if(this.running && !this.paused){ this.update(); }
+    this.render();
+  },
+
+  update(){
+    // physics step
+    let anyMoving=false;
+    for(const c of this.coins){
+      if(c.pocketed) continue;
+      if(Math.abs(c.vx)>MIN_VEL || Math.abs(c.vy)>MIN_VEL){
+        c.x+=c.vx; c.y+=c.vy;
+        c.vx*=FRICTION; c.vy*=FRICTION;
+        anyMoving=true;
+      } else { c.vx=0; c.vy=0; }
+      this.wallCollide(c);
+    }
+    // coin-coin collisions
+    for(let i=0;i<this.coins.length;i++){
+      const a=this.coins[i]; if(a.pocketed) continue;
+      for(let j=i+1;j<this.coins.length;j++){
+        const b=this.coins[j]; if(b.pocketed) continue;
+        this.resolveCollision(a,b);
+      }
+    }
+    // pocket checks
+    for(const c of this.coins){
+      if(c.pocketed) continue;
+      for(const p of this.pocketsList()){
+        if(dist(c.x,c.y,p.x,p.y) < POCKET_R-4){
+          this.pocketCoin(c);
+          break;
+        }
+      }
+    }
+    if(this.settling && !anyMoving){
+      this.settling=false;
+      this.resolveTurn();
+    }
+  },
+  pocketsList(){
+    return [
+      {x:PLAY_MIN,y:PLAY_MIN},{x:PLAY_MAX,y:PLAY_MIN},
+      {x:PLAY_MIN,y:PLAY_MAX},{x:PLAY_MAX,y:PLAY_MAX}
+    ];
+  },
+  wallCollide(c){
+    const min=PLAY_MIN+c.r, max=PLAY_MAX-c.r;
+    if(c.x<min){ c.x=min; c.vx=-c.vx*RESTITUTION_WALL; if(Math.abs(c.vx)>1) Audio_.wallHit(); }
+    if(c.x>max){ c.x=max; c.vx=-c.vx*RESTITUTION_WALL; if(Math.abs(c.vx)>1) Audio_.wallHit(); }
+    if(c.y<min){ c.y=min; c.vy=-c.vy*RESTITUTION_WALL; if(Math.abs(c.vy)>1) Audio_.wallHit(); }
+    if(c.y>max){ c.y=max; c.vy=-c.vy*RESTITUTION_WALL; if(Math.abs(c.vy)>1) Audio_.wallHit(); }
+  },
+  resolveCollision(a,b){
+    const dx=b.x-a.x, dy=b.y-a.y;
+    const d=Math.hypot(dx,dy);
+    const minD=a.r+b.r;
+    if(d===0 || d>minD) return;
+    const nx=dx/d, ny=dy/d;
+    const overlap = minD-d;
+    a.x-=nx*overlap/2; a.y-=ny*overlap/2;
+    b.x+=nx*overlap/2; b.y+=ny*overlap/2;
+    const avx=a.vx, avy=a.vy, bvx=b.vx, bvy=b.vy;
+    const relVel = (avx-bvx)*nx + (avy-bvy)*ny;
+    if(relVel<0) return;
+    const imp = relVel*RESTITUTION_COIN;
+    a.vx -= imp*nx; a.vy -= imp*ny;
+    b.vx += imp*nx; b.vy += imp*ny;
+    const speed = Math.hypot(avx-bvx,avy-bvy);
+    if(speed>0.6) Audio_.coinHit();
+  },
+  pocketCoin(c){
+    c.pocketed=true; c.vx=0; c.vy=0;
+    vibrate(20);
+    if(c.type==="striker"){
+      this.turnFoul=true;
+      Audio_.foul();
+      // respawn striker after turn resolves
+      return;
+    }
+    Audio_.pocket();
+    this.pocketedThisTurn.push(c.type);
+    Store.data._pockets = (Store.data._pockets||0)+1;
+    if(c.type==="queen"){
+      this.queenPocketed=true; this.queenCovered=false;
+      this.pendingQueenCoverFor = this.turn;
+      Audio_.queen();
+    }
+  },
+  resolveTurn(){
+    const player = this.turn;
+    const ownType = player===1? this.p1Type : this.p2Type;
+    const oppType = player===1? this.p2Type : this.p1Type;
+    let scoredOwn=false, scoredOpp=false, scoredQueenCoverNow=false;
+
+    this.pocketedThisTurn.forEach(type=>{
+      if(type==="queen") return; // handled separately
+      if(type===ownType){ this.scores[player]++; scoredOwn=true; }
+      else { this.scores[player===1?2:1]++; scoredOpp=true; }
+    });
+    if(this.pendingQueenCoverFor===player){
+      // did player pocket an own coin this same turn to cover queen?
+      const coveredNow = this.pocketedThisTurn.includes(ownType);
+      if(coveredNow){
+        this.queenCovered=true; this.queenOwner=player;
+        this.scores[player]+=3;
+        scoredQueenCoverNow=true;
+        Store.data._queenCovers=(Store.data._queenCovers||0)+1; Store.save();
+        toast("👑 Queen covered! +3");
+      }
+    }
+
+    // foul handling
+    if(this.turnFoul){
+      Audio_.foul();
+      $("foulFlag").classList.add("show");
+      setTimeout(()=>$("foulFlag").classList.remove("show"),1400);
+      // small penalty: give opponent a coin back is complex; simplest penalty = lose turn (already) + respawn striker centered
+    } else {
+      $("foulFlag").classList.remove("show");
+    }
+
+    // respawn striker for whichever player's turn is next
+    this.striker.pocketed=false;
+
+    const stillOwnToCoverPending = this.queenPocketed && !this.queenCovered;
+
+    // win check
+    const p1Done = this.scores[1]>=9;
+    const p2Done = this.scores[2]>=9;
+    if((p1Done||p2Done) && !stillOwnToCoverPending){
+      this.endGame(p1Done && (!p2Done || this.scores[1]>this.scores[2]) ? 1 : (p2Done?2:1));
+      return;
+    }
+
+    // turn passes unless player scored own coin (and no foul)
+    const extraTurn = (scoredOwn || scoredQueenCoverNow) && !this.turnFoul;
+    if(!extraTurn){
+      this.turn = this.turn===1?2:1;
+    }
+    this.strikerBaseOffset=0; $("strikerSlider").value=0;
+    this.positionStriker();
+    this.updateHud();
+
+    if(this.mode==="ai" && this.turn===2 && this.running){
+      $("gameHint").textContent = "AI is thinking…";
+      setTimeout(()=>this.aiTakeShot(), 700+Math.random()*500);
+    } else {
+      $("gameHint").textContent = extraTurn ? "Nice! Go again." : "Drag on the board to aim & shoot";
+    }
+  },
+  updateHud(){
+    $("p1Score").textContent=this.scores[1];
+    $("p2Score").textContent=this.scores[2];
+    const p1n = this.mode==="local"? t("p1") : t("you");
+    const p2n = this.mode==="ai"? t("ai") : t("p2");
+    $("p1Name").textContent=p1n; $("p2Name").textContent=p2n;
+    $("chipP1").classList.toggle("active", this.turn===1);
+    $("chipP2").classList.toggle("active", this.turn===2);
+    let label;
+    if(this.mode==="ai") label = this.turn===1? t("yourTurn"):t("aiTurn");
+    else if(this.mode==="practice") label = "Practice";
+    else label = this.turn===1? t("p1Turn"):t("p2Turn");
+    $("turnIndicator").textContent = label;
+  },
+
+  aiTakeShot(){
+    if(!this.running || this.paused) return;
+    const ownType = this.p2Type;
+    const targets = this.coins.filter(c=>!c.pocketed && c.type===ownType);
+    const pool = targets.length? targets : this.coins.filter(c=>!c.pocketed && (c.type==="white"||c.type==="black"||c.type==="queen"));
+    if(!pool.length){ return; }
+    const pockets=this.pocketsList();
+    // pick best target-pocket combo by simple heuristic
+    let best=null, bestScore=-Infinity;
+    pool.forEach(coin=>{
+      pockets.forEach(p=>{
+        const toPocket = Math.hypot(p.x-coin.x,p.y-coin.y);
+        const score = -toPocket; // closer to pocket is better
+        if(score>bestScore){ bestScore=score; best={coin,p}; }
+      });
+    });
+    const {coin,p}=best;
+    // contact point: striker must hit coin along line coin->pocket, from the far side
+    const dirCP = {x:p.x-coin.x,y:p.y-coin.y};
+    const lenCP = Math.hypot(dirCP.x,dirCP.y)||1;
+    const nCP = {x:dirCP.x/lenCP, y:dirCP.y/lenCP};
+    const contact = {x:coin.x-nCP.x*(COIN_R+STRIKER_R), y:coin.y-nCP.y*(COIN_R+STRIKER_R)};
+
+    const diffCfg = {
+      easy:{noise:0.55, powerNoise:0.4, powerBase:0.55},
+      medium:{noise:0.24, powerNoise:0.22, powerBase:0.68},
+      hard:{noise:0.06, powerNoise:0.08, powerBase:0.82}
+    }[this.difficulty]||{noise:0.24,powerNoise:0.22,powerBase:0.68};
+
+    let dirX = contact.x-this.striker.x, dirY = contact.y-this.striker.y;
+    const dlen=Math.hypot(dirX,dirY)||1;
+    dirX/=dlen; dirY/=dlen;
+    // add noise (rotate slightly)
+    const noiseAng = (Math.random()*2-1)*diffCfg.noise;
+    const cosA=Math.cos(noiseAng), sinA=Math.sin(noiseAng);
+    const fx = dirX*cosA - dirY*sinA, fy = dirX*sinA + dirY*cosA;
+
+    const power = Math.max(0.35, Math.min(1, diffCfg.powerBase + (Math.random()*2-1)*diffCfg.powerNoise));
+
+    this.saveHistory();
+    this.striker.vx = fx*power*MAX_SPEED;
+    this.striker.vy = fy*power*MAX_SPEED;
+    Audio_.strikerHit(); vibrate(15);
+    this.turnFoul=false; this.pocketedThisTurn=[];
+    this.settling=true;
+  },
+
+  endGame(winner){
+    this.running=false;
+    const elapsed = Math.floor((Date.now()-this.startTime - this.elapsedPaused)/1000);
+    Store.data.matches++;
+    const humanWon = (this.mode!=="local") ? winner===1 : null;
+    let xpGain=15, coinGain=5;
+    if(this.mode==="local"){
+      Store.data.wins++; // count a local match as a completed win record for stats simplicity
+      xpGain=20; coinGain=10;
+    } else if(this.mode==="practice"){
+      xpGain=10; coinGain=5;
+    } else {
+      if(humanWon){
+        Store.data.wins++; xpGain=25+({easy:5,medium:15,hard:30}[this.difficulty]||10); coinGain=15+({easy:5,medium:10,hard:20}[this.difficulty]||10);
+        if(this.difficulty==="hard"){ Store.data._aiHardWins=(Store.data._aiHardWins||0)+1; }
+        if(this.scores[2]===0){ Store.data._perfect=(Store.data._perfect||0)+1; }
+      } else {
+        Store.data.losses++; xpGain=5; coinGain=2;
+      }
+    }
+    Store.data.xp += xpGain; Store.data.coins += coinGain;
+    while(Store.data.xp >= Store.data.level*100){ Store.data.xp -= Store.data.level*100; Store.data.level++; toast("🎉 Level Up! Lvl "+Store.data.level); }
+    Store.data.bestScore = Math.max(Store.data.bestScore||0, Math.max(this.scores[1],this.scores[2]));
+    if(humanWon || this.mode==="local"){
+      if(!Store.data.fastestWin || elapsed<Store.data.fastestWin) Store.data.fastestWin=elapsed;
+    }
+    Store.save();
+    checkAchievements();
+
+    $("resultTitle").textContent = this.mode==="local" ? (winner===1?t("p1"):t("p2"))+" Wins!" : this.mode==="practice" ? "Practice Complete" : (humanWon? "You Win! 🎉":"AI Wins");
+    $("resultSub").textContent = "Final score "+this.scores[1]+" – "+this.scores[2];
+    $("resXp").textContent="+"+xpGain; $("resCoins").textContent="+"+coinGain;
+    const mm=Math.floor(elapsed/60), ss=elapsed%60;
+    $("resTime").textContent=mm+":"+String(ss).padStart(2,"0");
+    $("resultOverlay").classList.add("active");
+    if(humanWon!==false){ Audio_.win(); spawnConfetti(); }
+  },
+
+  render(){
+    const ctx=this.ctx;
+    ctx.clearRect(0,0,BOARD,BOARD);
+    // outer wood frame
+    const woodGrad = ctx.createLinearGradient(0,0,BOARD,BOARD);
+    const cs=getComputedStyle(document.documentElement);
+    woodGrad.addColorStop(0, cs.getPropertyValue("--wood-4").trim());
+    woodGrad.addColorStop(1, cs.getPropertyValue("--wood-2").trim());
+    ctx.fillStyle=woodGrad;
+    roundRect(ctx,0,0,BOARD,BOARD,26); ctx.fill();
+    // brass inlay ring
+    ctx.strokeStyle=cs.getPropertyValue("--brass").trim();
+    ctx.lineWidth=3;
+    roundRect(ctx,10,10,BOARD-20,BOARD-20,20); ctx.stroke();
+    // cloth playing surface
+    ctx.fillStyle=this.boardGrad;
+    roundRect(ctx,CUSHION-14,CUSHION-14,(BOARD-2*(CUSHION-14)),(BOARD-2*(CUSHION-14)),14); ctx.fill();
+    // center design (mandala-ish)
+    drawCenterDesign(ctx, BOARD/2, BOARD/2, 120, cs);
+    // baseline guides
+    drawBaselines(ctx, cs);
+    // pockets
+    this.pocketsList().forEach(p=>{
+      const grad = ctx.createRadialGradient(p.x,p.y,2,p.x,p.y,POCKET_R);
+      grad.addColorStop(0,"#000"); grad.addColorStop(1, cs.getPropertyValue("--pocket-color").trim());
+      ctx.fillStyle=grad;
+      ctx.beginPath(); ctx.arc(p.x,p.y,POCKET_R,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=cs.getPropertyValue("--brass").trim(); ctx.lineWidth=3;
+      ctx.beginPath(); ctx.arc(p.x,p.y,POCKET_R-1,0,Math.PI*2); ctx.stroke();
+    });
+    // coins
+    this.coins.forEach(c=>{ if(!c.pocketed) drawCoin(ctx,c,cs); });
+
+    // aim line
+    if(this.aiming && this._dragCur && this.canShoot()){
+      const sx=this.striker.x, sy=this.striker.y;
+      const dx=sx-this._dragCur.x, dy=sy-this._dragCur.y;
+      const len=Math.hypot(dx,dy);
+      const power=Math.min(1,len/MAX_PULL);
+      this.power=power; $("powerFill").style.width=Math.round(power*100)+"%";
+      if(len>10){
+        const nx=dx/len, ny=dy/len;
+        ctx.save();
+        ctx.strokeStyle="rgba(255,255,255,0.7)";
+        ctx.lineWidth=3; ctx.setLineDash([10,8]);
+        ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(sx+nx*260, sy+ny*260); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+        // pull indicator
+        ctx.save();
+        ctx.strokeStyle="rgba(255,90,70,0.85)"; ctx.lineWidth=3;
+        ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(this._dragCur.x,this._dragCur.y); ctx.stroke();
+        ctx.restore();
+      }
+    }
+  },
+};
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function drawCenterDesign(ctx,cx,cy,r,cs){
+  ctx.save();
+  ctx.strokeStyle="rgba(0,0,0,0.18)"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.7,0,Math.PI*2); ctx.stroke();
+  ctx.strokeStyle=cs.getPropertyValue("--brass").trim(); ctx.globalAlpha=0.5;
+  for(let i=0;i<16;i++){
+    const a=(Math.PI*2/16)*i;
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(a)*r*0.7, cy+Math.sin(a)*r*0.7);
+    ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+    ctx.stroke();
+  }
+  ctx.restore();
+  // small circles at the 4 corner "arrow" spots
+  [[CUSHION+40,CUSHION+40],[BOARD-CUSHION-40,CUSHION+40],[CUSHION+40,BOARD-CUSHION-40],[BOARD-CUSHION-40,BOARD-CUSHION-40]].forEach(([x,y])=>{
+    ctx.save();
+    ctx.strokeStyle="rgba(0,0,0,0.25)"; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(x,y,16,0,Math.PI*2); ctx.stroke();
+    ctx.restore();
+  });
+}
+function drawBaselines(ctx,cs){
+  ctx.save();
+  ctx.strokeStyle="rgba(0,0,0,0.28)"; ctx.lineWidth=2;
+  [PLAY_MAX-40, PLAY_MIN+40].forEach(y=>{
+    ctx.beginPath(); ctx.moveTo(PLAY_MIN+70,y); ctx.lineTo(PLAY_MAX-70,y); ctx.stroke();
+  });
+  ctx.restore();
+}
+function drawCoin(ctx,c,cs){
+  ctx.save();
+  // shadow
+  ctx.beginPath();
+  ctx.ellipse(c.x+3,c.y+5,c.r*0.95,c.r*0.65,0,0,Math.PI*2);
+  ctx.fillStyle="rgba(0,0,0,0.35)"; ctx.fill();
+  let a,b;
+  if(c.type==="white"){ a=cs.getPropertyValue("--coin-white-a").trim(); b=cs.getPropertyValue("--coin-white-b").trim(); }
+  else if(c.type==="black"){ a=cs.getPropertyValue("--coin-black-a").trim(); b=cs.getPropertyValue("--coin-black-b").trim(); }
+  else if(c.type==="queen"){ a=cs.getPropertyValue("--coin-queen-a").trim(); b=cs.getPropertyValue("--coin-queen-b").trim(); }
+  else { a=cs.getPropertyValue("--striker-a").trim(); b=cs.getPropertyValue("--striker-b").trim(); }
+  const grad=ctx.createRadialGradient(c.x-c.r*0.35,c.y-c.r*0.4,c.r*0.1,c.x,c.y,c.r);
+  grad.addColorStop(0,a); grad.addColorStop(1,b);
+  ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2); ctx.fillStyle=grad; ctx.fill();
+  ctx.lineWidth=1.4; ctx.strokeStyle="rgba(0,0,0,0.35)"; ctx.stroke();
+  // ring detail
+  ctx.beginPath(); ctx.arc(c.x,c.y,c.r*0.62,0,Math.PI*2);
+  ctx.strokeStyle="rgba(0,0,0,0.18)"; ctx.lineWidth=1.5; ctx.stroke();
+  // highlight
+  ctx.beginPath(); ctx.ellipse(c.x-c.r*0.32,c.y-c.r*0.38,c.r*0.32,c.r*0.18,-0.5,0,Math.PI*2);
+  ctx.fillStyle="rgba(255,255,255,0.55)"; ctx.fill();
+  ctx.restore();
+}
+
+/* confetti */
+function spawnConfetti(){
+  const colors=["#c9a04e","#e8c876","#b13a2b","#f3e9d2","#58c96a"];
+  for(let i=0;i<40;i++){
+    const el=document.createElement("div");
+    el.className="confetti-piece";
+    el.style.left=Math.random()*100+"%";
+    el.style.background=colors[Math.floor(Math.random()*colors.length)];
+    el.style.transform="rotate("+(Math.random()*360)+"deg)";
+    document.body.appendChild(el);
+    const dur=1800+Math.random()*1400;
+    el.animate([
+      {transform:el.style.transform+" translateY(0)", opacity:1},
+      {transform:el.style.transform+" translateY("+(window.innerHeight+40)+"px)", opacity:0.2}
+    ],{duration:dur, easing:"ease-in"});
+    setTimeout(()=>el.remove(), dur+50);
+  }
+}
+
+/* ============================================================
+   FLOW CONTROL
+   ============================================================ */
+function startGame(mode, difficulty){
+  Game.newGame(mode, difficulty);
+  showScreen("gameScreen");
+  $("undoBtn").style.visibility = mode==="practice" ? "visible":"hidden";
+  Audio_.startMusic();
+}
+function togglePause(){
+  if(!Game.running) return;
+  Game.paused = !Game.paused;
+  if(Game.paused){ Game.pauseStart=Date.now(); $("pauseOverlay").classList.add("active"); }
+  else{ Game.elapsedPaused += Date.now()-Game.pauseStart; $("pauseOverlay").classList.remove("active"); }
+}
+function resumeGame(){ Game.paused=false; Game.elapsedPaused += Date.now()-Game.pauseStart; $("pauseOverlay").classList.remove("active"); }
+function restartGame(){
+  $("pauseOverlay").classList.remove("active");
+  $("resultOverlay").classList.remove("active");
+  Game.newGame(Game.mode, Game.difficulty);
+}
+$("pauseBtn").addEventListener("click", togglePause);
+$("resumeBtn").addEventListener("click", resumeGame);
+$("restartBtn").addEventListener("click", restartGame);
+$("playAgainBtn").addEventListener("click", ()=>{ $("resultOverlay").classList.remove("active"); restartGame(); });
+$("undoBtn").addEventListener("click", ()=>Game.undo());
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function boot(){
+  syncSettingsUI(); syncHomeUI(); renderAchievements();
+  Game.init("boardCanvas");
+  Game.active=true;
+  setTimeout(()=>{
+    showScreen("homeScreen");
+    $("loadingScreen").style.display="none";
+  }, 700);
+}
+window.addEventListener("load", boot);
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden && Game.running && !Game.paused){ togglePause(); }
+});
+})();
+</script>
+</body>
+</html>
